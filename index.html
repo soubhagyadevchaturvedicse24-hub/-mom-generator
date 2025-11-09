@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSE Notice & MOM Generator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>CSE Notice & MOM Generator</h1>
+            <p class="subtitle">Generate professional notices and minutes of meeting for SSIPMT CSE Department</p>
+        </header>
+
+        <!-- Landing Mode Selector -->
+        <section id="landing" class="landing-section">
+            <div class="mode-selector">
+                <div class="mode-card">
+                    <h2>Create Notice</h2>
+                    <p>One-page meeting notice with bold department line, bold+underlined NOTICE, correctly spaced body, and "Copy to" footer.</p>
+                    <button class="btn btn-primary" id="btn-notice-mode" aria-label="Switch to Notice Generator">
+                        Create Notice
+                    </button>
+                </div>
+                <div class="mode-card">
+                    <h2>Create MOM</h2>
+                    <p>Minutes of Meeting with structured sections: Agenda, Discussion Points & Decisions (auto-elaborated from key points), and mandatory closing statement.</p>
+                    <button class="btn btn-primary" id="btn-mom-mode" aria-label="Switch to MOM Generator">
+                        Create MOM
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Navigation Tabs -->
+        <nav id="nav-tabs" class="nav-tabs hidden" role="tablist">
+            <button class="tab-btn active" id="tab-notice" role="tab" aria-selected="true" aria-controls="section-notice">
+                Notice
+            </button>
+            <button class="tab-btn" id="tab-mom" role="tab" aria-selected="false" aria-controls="section-mom">
+                MOM
+            </button>
+            <button class="btn-back" id="btn-back-to-landing" aria-label="Back to mode selector">
+                ← Back
+            </button>
+        </nav>
+
+        <!-- NOTICE GENERATOR -->
+        <section id="section-notice" class="generator-section hidden">
+            <h2 class="section-title">Notice Generator</h2>
+            
+            <!-- Step 1: Input -->
+            <div class="step-card">
+                <h3 class="step-title">Step 1 – Input</h3>
+                <form id="form-notice" class="input-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="notice-date">Date <span class="required">*</span></label>
+                            <input type="text" id="notice-date" name="date" value="08 January 2025" required aria-required="true">
+                            <span class="hint">Example: 08 January 2025</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="notice-time">Time <span class="required">*</span></label>
+                            <input type="text" id="notice-time" name="time" value="11:00 AM" required aria-required="true">
+                            <span class="hint">Example: 11:00 AM</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notice-venue">Venue <span class="required">*</span></label>
+                        <input type="text" id="notice-venue" name="venue" value="HoD (CSE) Room, SSIPMT, Raipur" required aria-required="true">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notice-agenda">Agenda / Subject <span class="required">*</span></label>
+                        <textarea id="notice-agenda" name="agenda" rows="3" required aria-required="true">Allocation of subjects for even semesters (4th, 6th, and 8th); review of faculty workload; finalization of teaching schedule</textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="notice-font">Font Family</label>
+                            <select id="notice-font" name="font">
+                                <option value="times" selected>Times New Roman</option>
+                                <option value="calibri">Calibri</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="notice-size">Font Size</label>
+                            <select id="notice-size" name="size">
+                                <option value="12" selected>12 pt</option>
+                                <option value="13">13 pt</option>
+                                <option value="14">14 pt</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="notice-include-day" name="includeDay">
+                            Include day name in body (e.g., "Wednesday, 08 January 2025")
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="notice-extra-blank" name="extraBlank">
+                            Add extra blank line before footer
+                        </label>
+                    </div>
+
+                    <div class="error-message" id="notice-error" role="alert" aria-live="polite"></div>
+
+                    <button type="submit" class="btn btn-primary btn-generate">Generate Notice</button>
+                </form>
+            </div>
+
+            <!-- Step 2: Output -->
+            <div class="step-card hidden" id="notice-output-section">
+                <h3 class="step-title">Step 2 – Output</h3>
+                
+                <div class="output-grid">
+                    <!-- RTF Output -->
+                    <div class="output-card">
+                        <h4>RTF (for Word)</h4>
+                        <textarea id="notice-rtf-output" class="output-textarea" readonly aria-label="RTF output for Notice"></textarea>
+                        <div class="button-group">
+                            <button type="button" class="btn btn-secondary" id="btn-copy-notice-rtf">
+                                📋 Copy RTF
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="btn-download-notice-rtf">
+                                💾 Download .rtf
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Plain Text Output -->
+                    <div class="output-card">
+                        <h4>Plain Text</h4>
+                        <textarea id="notice-text-output" class="output-textarea" readonly aria-label="Plain text output for Notice"></textarea>
+                        <div class="button-group">
+                            <button type="button" class="btn btn-secondary" id="btn-copy-notice-text">
+                                📋 Copy Text
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="btn-download-notice-text">
+                                💾 Download .txt
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="help-card">
+                    <h5>How to paste into Word</h5>
+                    <ol>
+                        <li>Click <strong>"Copy RTF"</strong> button above</li>
+                        <li>Open your Word document</li>
+                        <li>Press <kbd>Ctrl + V</kbd> to paste</li>
+                        <li>Formatting (bold, underline, centering) will be preserved automatically</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <!-- MOM GENERATOR -->
+        <section id="section-mom" class="generator-section hidden">
+            <h2 class="section-title">MOM Generator (Minutes of Meeting)</h2>
+            
+            <!-- Step 1: Input -->
+            <div class="step-card">
+                <h3 class="step-title">Step 1 – Input</h3>
+                <form id="form-mom" class="input-form">
+                    <div class="form-group">
+                        <label for="mom-department">Department</label>
+                        <input type="text" id="mom-department" name="department" value="Department of Computer Science & Engineering">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="mom-date">Date <span class="required">*</span></label>
+                            <input type="text" id="mom-date" name="date" value="08 January 2025" required aria-required="true">
+                        </div>
+                        <div class="form-group">
+                            <label for="mom-time">Time <span class="required">*</span></label>
+                            <input type="text" id="mom-time" name="time" value="11:00 AM" required aria-required="true">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mom-venue">Venue <span class="required">*</span></label>
+                        <input type="text" id="mom-venue" name="venue" value="HoD (CSE) Room, SSIPMT, Raipur" required aria-required="true">
+                    </div>
+
+
+
+                    <div class="form-group">
+                        <label for="mom-agenda">Agenda Items (one per line) <span class="required">*</span></label>
+                        <textarea id="mom-agenda" name="agenda" rows="4" required aria-required="true">Review of workload
+Finalize teaching schedule
+CT-1 planning</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mom-discussion">Key Discussion Points <span class="required">*</span></label>
+                        <textarea id="mom-discussion" name="discussion" rows="8" required aria-required="true">- Review of current semester progress
+- Faculty workload distribution analysis
+- Examination schedule coordination
+- Student performance evaluation criteria</textarea>
+                        <span class="hint">Enter key points (one per line). These will be professionally elaborated in the output.</span>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="mom-font">Font Family</label>
+                            <select id="mom-font" name="font">
+                                <option value="times" selected>Times New Roman</option>
+                                <option value="calibri">Calibri</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="mom-size">Font Size</label>
+                            <select id="mom-size" name="size">
+                                <option value="12" selected>12 pt</option>
+                                <option value="13">13 pt</option>
+                                <option value="14">14 pt</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="error-message" id="mom-error" role="alert" aria-live="polite"></div>
+
+                    <button type="submit" class="btn btn-primary btn-generate">Generate MOM</button>
+                </form>
+            </div>
+
+            <!-- Step 2: Output -->
+            <div class="step-card hidden" id="mom-output-section">
+                <h3 class="step-title">Step 2 – Output</h3>
+                
+                <div class="output-grid">
+                    <!-- RTF Output -->
+                    <div class="output-card">
+                        <h4>RTF (for Word with Bold Formatting)</h4>
+                        <p style="color: var(--accent-primary); font-size: 0.9rem; margin-bottom: 0.5rem;">✨ Copy this to preserve bold formatting!</p>
+                        <textarea id="mom-rtf-output" class="output-textarea" readonly aria-label="RTF output for MOM"></textarea>
+                        <div class="button-group">
+                            <button type="button" class="btn btn-secondary" id="btn-copy-mom-rtf">
+                                📋 Copy RTF (with Bold)
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="btn-download-mom-rtf">
+                                💾 Download .rtf
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Plain Text Output -->
+                    <div class="output-card">
+                        <h4>Plain Text (Unicode Bold)</h4>
+                        <textarea id="mom-text-output" class="output-textarea" readonly aria-label="Plain text output for MOM"></textarea>
+                        <div class="button-group">
+                            <button type="button" class="btn btn-secondary" id="btn-copy-mom-text">
+                                📋 Copy Text (Bold)
+                            </button>
+                            <button type="button" class="btn btn-secondary" id="btn-download-mom-text">
+                                💾 Download .txt
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="help-card">
+                    <h5>How to paste into Word with Bold Formatting</h5>
+                    <ol>
+                        <li><strong>Option 1 (Recommended):</strong> Click <strong>"📋 Copy RTF (with Bold)"</strong> button (left side)</li>
+                        <li><strong>Option 2:</strong> Click <strong>"📋 Copy Text"</strong> button (right side) - uses Unicode bold characters</li>
+                        <li>Open your Word document</li>
+                        <li>Press <kbd>Ctrl + V</kbd> to paste</li>
+                        <li><strong>Date:, Time:, Venue:, Agenda:, Minutes of Meeting:</strong> will appear <strong>BOLD</strong> ✨</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Scripts -->
+    <script src="validators.js"></script>
+    <script src="rtf.js"></script>
+    <script src="templates.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
