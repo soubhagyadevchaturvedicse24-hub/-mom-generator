@@ -296,17 +296,40 @@ CT-1 planning</textarea>
                 </p>
                 
                 <div class="form-group">
+                    <label for="ai-provider">AI Provider</label>
+                    <select id="ai-provider" class="input-text">
+                        <option value="gemini">Google Gemini (FREE - Recommended)</option>
+                        <option value="openai">OpenAI GPT (Paid)</option>
+                    </select>
+                    <small class="help-text">Gemini offers a generous free tier with no credit card required.</small>
+                </div>
+
+                <div class="form-group" id="gemini-key-group">
                     <label for="ai-api-key">
+                        Google Gemini API Key
+                        <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="help-link">(Get Free Key)</a>
+                    </label>
+                    <input 
+                        type="password" 
+                        id="ai-api-key" 
+                        placeholder="AIza..." 
+                        class="input-text"
+                    />
+                    <small class="help-text">✅ FREE tier: 60 requests/minute, no credit card needed!</small>
+                </div>
+
+                <div class="form-group hidden" id="openai-key-group">
+                    <label for="ai-api-key-openai">
                         OpenAI API Key
                         <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" class="help-link">(Get Key)</a>
                     </label>
                     <input 
                         type="password" 
-                        id="ai-api-key" 
+                        id="ai-api-key-openai" 
                         placeholder="sk-..." 
                         class="input-text"
                     />
-                    <small class="help-text">Your API key is stored locally and never sent anywhere except OpenAI.</small>
+                    <small class="help-text">⚠️ Paid service: ~$0.01 per MOM (requires billing setup)</small>
                 </div>
 
                 <div class="form-group checkbox-group">
@@ -318,10 +341,12 @@ CT-1 planning</textarea>
 
                 <div class="ai-info">
                     <h3>Cost Estimate</h3>
-                    <p id="ai-cost-estimate">~$0.01 USD per MOM (GPT-3.5-turbo)</p>
+                    <p id="ai-cost-estimate">FREE (Gemini free tier: 60 requests/min)</p>
                     
                     <h3>How it works</h3>
                     <ul>
+                        <li><strong>Gemini (FREE)</strong>: Google's AI model with generous free tier</li>
+                        <li><strong>OpenAI</strong>: Premium quality, requires billing setup</li>
                         <li>AI follows strict institutional formatting rules</li>
                         <li>Elaborates your bullet points without adding new ideas</li>
                         <li>Uses formal academic language</li>

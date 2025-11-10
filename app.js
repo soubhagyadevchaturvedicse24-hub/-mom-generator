@@ -60,7 +60,12 @@ const elements = {
     btnCloseModal: document.getElementById('btn-close-modal'),
     btnCancelAi: document.getElementById('btn-cancel-ai'),
     btnSaveAi: document.getElementById('btn-save-ai'),
+    aiProvider: document.getElementById('ai-provider'),
     aiApiKey: document.getElementById('ai-api-key'),
+    aiApiKeyOpenai: document.getElementById('ai-api-key-openai'),
+    geminiKeyGroup: document.getElementById('gemini-key-group'),
+    openaiKeyGroup: document.getElementById('openai-key-group'),
+    aiCostEstimate: document.getElementById('ai-cost-estimate'),
     aiEnabledCheckbox: document.getElementById('ai-enabled')
 };
 
@@ -171,10 +176,41 @@ function openAiModal() {
     elements.aiModal.classList.remove('hidden');
     // Load saved settings
     const savedKey = loadApiKey();
+    const savedProvider = localStorage.getItem('ai_provider') || 'gemini';
+    
+    elements.aiProvider.value = savedProvider;
+    updateProviderUI(savedProvider);
+    
     if (savedKey) {
-        elements.aiApiKey.value = savedKey;
+        if (savedProvider === 'gemini') {
+            elements.aiApiKey.value = savedKey;
+        } else {
+            elements.aiApiKeyOpenai.value = savedKey;
+        }
     }
     elements.aiEnabledCheckbox.checked = aiEnabled;
+    updateCostEstimate();
+}
+
+function updateProviderUI(provider) {
+    if (provider === 'gemini') {
+        elements.geminiKeyGroup.classList.remove('hidden');
+        elements.openaiKeyGroup.classList.add('hidden');
+    } else {
+        elements.geminiKeyGroup.classList.add('hidden');
+        elements.openaiKeyGroup.classList.remove('hidden');
+    }
+}
+
+function updateCostEstimate() {
+    const provider = elements.aiProvider.value;
+    if (provider === 'gemini') {
+        elements.aiCostEstimate.textContent = 'FREE (Gemini free tier: 60 requests/min)';
+        elements.aiCostEstimate.style.color = 'var(--success-color)';
+    } else {
+        elements.aiCostEstimate.textContent = '~$0.01 USD per MOM (GPT-3.5-turbo)';
+        elements.aiCostEstimate.style.color = 'var(--text-secondary)';
+    }
 }
 
 function closeAiModal() {
@@ -182,12 +218,15 @@ function closeAiModal() {
 }
 
 function saveAiSettings() {
-    const apiKey = elements.aiApiKey.value.trim();
+    const provider = elements.aiProvider.value;
+    const apiKey = provider === 'gemini' 
+        ? elements.aiApiKey.value.trim()
+        : elements.aiApiKeyOpenai.value.trim();
     aiEnabled = elements.aiEnabledCheckbox.checked;
     
     if (apiKey) {
-        setApiKey(apiKey);
-        console.log('✓ API key saved');
+        setApiKey(apiKey, provider);
+        console.log(`✓ ${provider.toUpperCase()} API key saved`);
     }
     
     // Save AI enabled state
@@ -199,7 +238,8 @@ function saveAiSettings() {
     if (aiEnabled && !apiKey) {
         alert('⚠️ AI enabled but no API key provided. AI features will not work.');
     } else if (aiEnabled && apiKey) {
-        alert('✓ AI settings saved successfully!');
+        const providerName = provider === 'gemini' ? 'Google Gemini (FREE)' : 'OpenAI';
+        alert(`✓ AI settings saved successfully!\nProvider: ${providerName}`);
     }
 }
 
@@ -367,6 +407,12 @@ function setupEventListeners() {
     elements.btnCancelAi.addEventListener('click', closeAiModal);
     elements.btnSaveAi.addEventListener('click', saveAiSettings);
     
+    // AI Provider change
+    elements.aiProvider.addEventListener('change', (e) => {
+        updateProviderUI(e.target.value);
+        updateCostEstimate();
+    });
+    
     // Close modal on background click
     elements.aiModal.addEventListener('click', (e) => {
         if (e.target === elements.aiModal) {
@@ -440,7 +486,8 @@ function initApp() {
     
     console.log('AI Status:', aiEnabled ? '✓ Enabled' : '✗ Disabled');
     if (isAIAvailable()) {
-        console.log('AI API: ✓ Configured');
+        const provider = localStorage.getItem('ai_provider') || 'gemini';
+        console.log(`AI Provider: ${provider.toUpperCase()}`);
     }
     
     setupEventListeners();
