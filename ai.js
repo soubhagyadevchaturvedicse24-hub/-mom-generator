@@ -8,7 +8,7 @@
 const AI_CONFIG = {
     provider: 'gemini', // 'openai', 'gemini'
     apiKey: '', // User will set this
-    model: 'gemini-pro', // Gemini model
+    model: 'gemini-1.5-flash', // Gemini model (latest)
     openaiModel: 'gpt-3.5-turbo', // OpenAI fallback
     maxTokens: 500,
     temperature: 0.7
@@ -131,7 +131,7 @@ Generate the complete Minutes of Meeting following the structure rules.`;
  * Generate using Google Gemini API
  */
 async function generateWithGemini(userPrompt) {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${AI_CONFIG.model}:generateContent?key=${AI_CONFIG.apiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/${AI_CONFIG.model}:generateContent?key=${AI_CONFIG.apiKey}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -216,7 +216,7 @@ Elaborated Point:`;
     try {
         let result;
         if (AI_CONFIG.provider === 'gemini') {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${AI_CONFIG.model}:generateContent?key=${AI_CONFIG.apiKey}`, {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/${AI_CONFIG.model}:generateContent?key=${AI_CONFIG.apiKey}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
