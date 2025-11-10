@@ -282,10 +282,70 @@ CT-1 planning</textarea>
         </section>
     </div>
 
+    <!-- AI Settings Modal -->
+    <div id="ai-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🤖 AI Settings</h2>
+                <button class="btn-close" id="btn-close-modal" aria-label="Close AI settings">×</button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-description">
+                    Enable AI to generate more natural and context-aware Minutes of Meeting. 
+                    AI will follow strict formatting rules while elaborating discussion points.
+                </p>
+                
+                <div class="form-group">
+                    <label for="ai-api-key">
+                        OpenAI API Key
+                        <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" class="help-link">(Get Key)</a>
+                    </label>
+                    <input 
+                        type="password" 
+                        id="ai-api-key" 
+                        placeholder="sk-..." 
+                        class="input-text"
+                    />
+                    <small class="help-text">Your API key is stored locally and never sent anywhere except OpenAI.</small>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="ai-enabled" />
+                        Enable AI Generation
+                    </label>
+                </div>
+
+                <div class="ai-info">
+                    <h3>Cost Estimate</h3>
+                    <p id="ai-cost-estimate">~$0.01 USD per MOM (GPT-3.5-turbo)</p>
+                    
+                    <h3>How it works</h3>
+                    <ul>
+                        <li>AI follows strict institutional formatting rules</li>
+                        <li>Elaborates your bullet points without adding new ideas</li>
+                        <li>Uses formal academic language</li>
+                        <li>Falls back to rule-based generation if API fails</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="btn-cancel-ai">Cancel</button>
+                <button class="btn btn-primary" id="btn-save-ai">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Settings Button (Floating) -->
+    <button id="btn-ai-settings" class="btn-floating" aria-label="AI Settings" title="Configure AI">
+        🤖
+    </button>
+
     <!-- Scripts -->
     <script src="validators.js"></script>
     <script src="rtf.js"></script>
     <script src="templates.js"></script>
+    <script src="ai.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

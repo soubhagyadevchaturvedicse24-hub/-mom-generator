@@ -13,6 +13,7 @@
 // State Management
 // ===========================
 let currentMode = 'landing'; // 'landing', 'notice', 'mom'
+let aiEnabled = false; // AI generation toggle
 
 // ===========================
 // DOM Elements
@@ -51,7 +52,16 @@ const elements = {
     btnCopyMomRtf: document.getElementById('btn-copy-mom-rtf'),
     btnDownloadMomRtf: document.getElementById('btn-download-mom-rtf'),
     btnCopyMomText: document.getElementById('btn-copy-mom-text'),
-    btnDownloadMomText: document.getElementById('btn-download-mom-text')
+    btnDownloadMomText: document.getElementById('btn-download-mom-text'),
+    
+    // AI Settings
+    btnAiSettings: document.getElementById('btn-ai-settings'),
+    aiModal: document.getElementById('ai-modal'),
+    btnCloseModal: document.getElementById('btn-close-modal'),
+    btnCancelAi: document.getElementById('btn-cancel-ai'),
+    btnSaveAi: document.getElementById('btn-save-ai'),
+    aiApiKey: document.getElementById('ai-api-key'),
+    aiEnabledCheckbox: document.getElementById('ai-enabled')
 };
 
 // ===========================
@@ -155,9 +165,48 @@ function handleNoticeSubmit(e) {
 }
 
 // ===========================
+// AI Settings Modal
+// ===========================
+function openAiModal() {
+    elements.aiModal.classList.remove('hidden');
+    // Load saved settings
+    const savedKey = loadApiKey();
+    if (savedKey) {
+        elements.aiApiKey.value = savedKey;
+    }
+    elements.aiEnabledCheckbox.checked = aiEnabled;
+}
+
+function closeAiModal() {
+    elements.aiModal.classList.add('hidden');
+}
+
+function saveAiSettings() {
+    const apiKey = elements.aiApiKey.value.trim();
+    aiEnabled = elements.aiEnabledCheckbox.checked;
+    
+    if (apiKey) {
+        setApiKey(apiKey);
+        console.log('✓ API key saved');
+    }
+    
+    // Save AI enabled state
+    localStorage.setItem('ai_enabled', aiEnabled);
+    
+    closeAiModal();
+    
+    // Show confirmation
+    if (aiEnabled && !apiKey) {
+        alert('⚠️ AI enabled but no API key provided. AI features will not work.');
+    } else if (aiEnabled && apiKey) {
+        alert('✓ AI settings saved successfully!');
+    }
+}
+
+// ===========================
 // MOM Form Handling
 // ===========================
-function handleMomSubmit(e) {
+async function handleMomSubmit(e) {
     e.preventDefault();
     clearError(elements.momError);
     
@@ -182,10 +231,43 @@ function handleMomSubmit(e) {
         return;
     }
     
-    // Generate RTF and Text
+    // Show loading state
+    const submitBtn = elements.formMom.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = aiEnabled && isAIAvailable() ? '🤖 Generating with AI...' : 'Generating...';
+    submitBtn.disabled = true;
+    
     try {
-        const rtf = buildMOMRTF(data);
-        const text = momText(data);
+        let rtf, text;
+        
+        // Use AI generation if enabled and available
+        if (aiEnabled && isAIAvailable()) {
+            try {
+                // Generate MOM with AI
+                const aiGeneratedText = await generateMOMWithAI({
+                    agendaItems: data.agendaItems,
+                    discussion: data.discussion,
+                    closingStatement: 'The meeting concluded at 12:00 PM with positive remarks from the Head of Department.'
+                });
+                
+                // For now, use AI for text output and regular for RTF
+                // In future, you could parse AI output into RTF format
+                text = aiGeneratedText;
+                rtf = buildMOMRTF(data); // Fallback to template-based RTF
+                
+                console.log('✓ AI generation successful');
+            } catch (aiError) {
+                console.error('AI generation failed, using template:', aiError);
+                showError(elements.momError, ['AI generation failed: ' + aiError.message + '. Using template-based generation.']);
+                // Fall back to template-based
+                rtf = buildMOMRTF(data);
+                text = momText(data);
+            }
+        } else {
+            // Template-based generation
+            rtf = buildMOMRTF(data);
+            text = momText(data);
+        }
         
         // Display outputs
         elements.momRtfOutput.value = rtf;
@@ -200,6 +282,10 @@ function handleMomSubmit(e) {
     } catch (error) {
         console.error('MOM generation error:', error);
         showError(elements.momError, ['Failed to generate MOM. Please check your inputs.']);
+    } finally {
+        // Reset button state
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
     }
 }
 
@@ -275,6 +361,19 @@ function setupEventListeners() {
     elements.formNotice.addEventListener('submit', handleNoticeSubmit);
     elements.formMom.addEventListener('submit', handleMomSubmit);
     
+    // AI Settings Modal
+    elements.btnAiSettings.addEventListener('click', openAiModal);
+    elements.btnCloseModal.addEventListener('click', closeAiModal);
+    elements.btnCancelAi.addEventListener('click', closeAiModal);
+    elements.btnSaveAi.addEventListener('click', saveAiSettings);
+    
+    // Close modal on background click
+    elements.aiModal.addEventListener('click', (e) => {
+        if (e.target === elements.aiModal) {
+            closeAiModal();
+        }
+    });
+    
     // Notice copy/download buttons
     elements.btnCopyNoticeRtf.addEventListener('click', () => {
         copyToClipboard(elements.noticeRtfOutput.value, elements.btnCopyNoticeRtf);
@@ -324,17 +423,6 @@ function setupEventListeners() {
             'text/plain'
         );
     });
-    
-    // Action items
-    elements.btnAddAction.addEventListener('click', addActionItem);
-    
-    // Remove handlers for existing action items
-    document.querySelectorAll('.btn-remove-action').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const row = e.target.closest('.action-item-row');
-            if (row) row.remove();
-        });
-    });
 }
 
 // ===========================
@@ -342,6 +430,19 @@ function setupEventListeners() {
 // ===========================
 function initApp() {
     console.log('CSE Notice & MOM Generator initialized');
+    
+    // Load AI settings
+    loadApiKey();
+    const savedAiEnabled = localStorage.getItem('ai_enabled');
+    if (savedAiEnabled === 'true') {
+        aiEnabled = true;
+    }
+    
+    console.log('AI Status:', aiEnabled ? '✓ Enabled' : '✗ Disabled');
+    if (isAIAvailable()) {
+        console.log('AI API: ✓ Configured');
+    }
+    
     setupEventListeners();
     showLanding();
 }

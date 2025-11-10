@@ -573,6 +573,200 @@ body {
 }
 
 /* ===========================
+   AI Settings Modal
+   =========================== */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: var(--bg-card);
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-md);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h2 {
+    color: var(--accent-primary);
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.btn-close {
+    background: transparent;
+    border: none;
+    font-size: 2rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: var(--transition);
+}
+
+.btn-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-description {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.help-link {
+    color: var(--accent-primary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    margin-left: 0.5rem;
+}
+
+.help-link:hover {
+    text-decoration: underline;
+}
+
+.help-text {
+    display: block;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+}
+
+.checkbox-group {
+    margin: 1.5rem 0;
+}
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.ai-info {
+    background: rgba(0, 173, 181, 0.1);
+    border-left: 3px solid var(--accent-primary);
+    padding: 1rem;
+    margin-top: 1.5rem;
+    border-radius: 4px;
+}
+
+.ai-info h3 {
+    color: var(--accent-primary);
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.ai-info p,
+.ai-info ul {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.ai-info ul {
+    margin-top: 0.5rem;
+    padding-left: 1.5rem;
+}
+
+.ai-info ul li {
+    margin-bottom: 0.5rem;
+}
+
+#ai-cost-estimate {
+    font-weight: 600;
+    color: var(--success-color);
+}
+
+.modal-footer {
+    padding: 1.5rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+/* Floating AI Settings Button */
+.btn-floating {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--accent-primary);
+    border: none;
+    font-size: 1.8rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-floating:hover {
+    background: var(--accent-hover);
+    transform: scale(1.1);
+}
+
+.btn-floating:active {
+    transform: scale(0.95);
+}
+
+/* ===========================
    Print Styles (optional)
    =========================== */
 @media print {
@@ -583,7 +777,9 @@ body {
 
     .nav-tabs,
     .btn,
-    .help-card {
+    .help-card,
+    .btn-floating,
+    .modal {
         display: none;
     }
 }
